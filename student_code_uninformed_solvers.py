@@ -31,6 +31,7 @@ class SolverDFS(UninformedSolver):
         currDepth = self.currentState.depth
         oldState = self.currentState
 
+        # print (self.gm.getMovables())
         for moveableStatement in self.gm.getMovables():
             # print(moveableStatement)
             self.gm.makeMove(moveableStatement)

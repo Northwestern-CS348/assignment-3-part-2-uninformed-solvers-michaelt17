@@ -197,8 +197,44 @@ class Puzzle8Game(GameMaster):
         Returns:
             A Tuple of Tuples that represent the game state
         """
-        ### Student code goes here
-        pass
+        counter = 0
+
+        tuple1 = ()
+        tuple2 = ()
+        tuple3 = ()
+
+        ask_dict = {
+            0 : Fact(Statement(["at","pos1","pos1","?x"])),
+            1 : Fact(Statement(["at","pos2","pos1","?x"])),
+            2 : Fact(Statement(["at","pos3","pos1","?x"])),
+            3 : Fact(Statement(["at","pos1","pos2","?x"])),
+            4 : Fact(Statement(["at","pos2","pos2","?x"])),
+            5 : Fact(Statement(["at","pos3","pos2","?x"])),
+            6 : Fact(Statement(["at","pos1","pos3","?x"])),
+            7 : Fact(Statement(["at","pos2","pos3","?x"])),
+            8 : Fact(Statement(["at","pos3","pos3","?x"]))
+        }
+
+        while counter < 9:
+            asking = self.kb.kb_ask(ask_dict[counter])
+            # print(counter//3)
+
+            if str(asking[0].bindings[0].constant) == "empty":
+            #     print(str(asking[0].bindings[0].constant))
+                appendVal = -1
+            else:
+            #     print(int(str(asking[0].bindings[0].constant)[4]))
+                appendVal = int(str(asking[0].bindings[0].constant)[4])
+
+            if counter//3 == 0:
+                tuple1 += (appendVal,)
+            elif counter//3 == 1:
+                tuple2 += (appendVal,)
+            else:
+                tuple3 += (appendVal,)
+
+            counter += 1
+        return (tuple1,tuple2,tuple3)
 
     def makeMove(self, movable_statement):
         """
@@ -216,8 +252,38 @@ class Puzzle8Game(GameMaster):
         Returns:
             None
         """
-        ### Student code goes here
-        pass
+
+        movingTile = movable_statement.terms[0]
+        fromX = movable_statement.terms[1]
+        fromY = movable_statement.terms[2]
+        emptyX = movable_statement.terms[3]
+        emptyY = movable_statement.terms[4]
+
+        factsToAdd = []
+        factsToRetract = []
+
+        # print(movingTile)
+        # print(fromX)
+        # print(fromY)
+        # print(emptyX)
+        # print(emptyY)
+
+        factsToRetract.append(Fact(Statement(["at",fromX,fromY,movingTile])))
+        factsToRetract.append(Fact(Statement(["at",emptyX,emptyY,"empty"])))
+        factsToRetract.append(Fact(movable_statement))
+
+        factsToAdd.append(Fact(Statement(["at",emptyX,emptyY,movingTile])))
+        factsToAdd.append(Fact(Statement(["at",fromX,fromY,"empty"])))
+
+        # print("About to print statements:")
+        # for f in self.kb.facts:
+        #     print(f.statement)
+        
+        for retractFact in factsToRetract:
+            self.kb.kb_retract(retractFact)
+
+        for addFact in factsToAdd:
+            self.kb.kb_assert(addFact)
 
     def reverseMove(self, movable_statement):
         """
