@@ -34,7 +34,7 @@ fact: (on disk3 peg1)
 
 fact: (onTop disk1 disk2)
 fact: (onTop disk2 disk3)
-fact: (onTop disk3 ground)
+fact: (onTop disk3 table)
 
 fact: (empty peg2)
 fact: (empty peg3)

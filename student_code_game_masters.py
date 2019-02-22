@@ -75,12 +75,39 @@ class TowerOfHanoiGame(GameMaster):
             None
         """
 
-        pred = movable_statement.predicate
         movingDisk = movable_statement.terms[0]
         fromPeg = movable_statement.terms[1]
         destPeg = movable_statement.terms[2]
 
-        self.kb.kb_remove(movable_statement)
+        factsToAppend = []
+        factsToRetract = []
+
+        # 4 facts you'll need to add/retract no matter what: disk on new peg/disk off of old peg,
+        # and removing the old top and adding the new top
+        addStatementOn = Statement(["on", movingDisk, destPeg])
+        # print(addStatement)
+        removeStatementOn = Statement(["on", movingDisk, fromPeg])
+        # print(removeStatement)
+        addStatementTop = Statement(["top", movingDisk,destPeg])
+        removeStatementTop = Statement(["top", movingDisk,fromPeg])
+
+        factsToAdd.append(Fact(addStatementOn))
+        factsToAdd.append(Fact(addStatementTop))
+
+        factsToRetract.append(Fact(removeStatementOn))
+        factsToRetract.append(Fact(removeStatementTop))
+
+        if Fact(Statement("empty", destPeg)) in self.kb.facts:
+            factsToRetract.retract(Fact(removeStatementTop))
+        else:
+            # factsToAdd.append(Fact(Statement("onTop")))
+            # find disk on top of destPeg and add onTop
+
+        if Fact(Statement("onTop", movingDisk, "ground")) in self.kb.facts:
+            factsToAdd.append(Fact(Statement("empty", fromPeg)))
+        else:
+            # factsToAdd.append(Fact(Statement("onTop")))
+            # find disk below movingDisk and add top
 
         pass
 
