@@ -54,7 +54,7 @@ class KBTest(unittest.TestCase):
         except TimeoutError:
             raise Exception("Timed out: %s" % inspect.stack()[1][3])
 
-    def runSolve(self, solver, timeout=5):
+    def runSolve(self, solver, timeout=60):
         """
         Wrapper function; calls solve(..) with a timeout
 
@@ -125,7 +125,20 @@ class KBTest(unittest.TestCase):
 
         solver = SolverDFS(th, ((),(),(1,2,3)))
         self.runSolve(solver)
-    #
+
+    def test09_DFS_Hanoi_5(self):
+        th = TowerOfHanoiGame()
+        th.read('hanoi_5_all_disks_on_peg_one.txt')
+        required = [
+            'fact: (movable disk1 peg3 peg1)',
+            'fact: (movable disk1 peg3 peg2)',
+        ]
+        th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
+        self.assertFalse(th.isWon())
+
+        solver = SolverDFS(th, ((),(),(1,2,3,4,5)))
+        self.runSolve(solver)
+
     # def test04_BFS_Hanoi(self):
     #     th = TowerOfHanoiGame()
     #     th.read('hanoi_3_all_disks_on_peg_one.txt')
@@ -144,7 +157,7 @@ class KBTest(unittest.TestCase):
     #         [11, ((1,), (3,), (2,))],
     #         [20, ((), (2, 3), (1,))],
     #     ])
-    #
+
     # def test05_BFS_Hanoi(self):
     #     th = TowerOfHanoiGame()
     #     th.read('hanoi_3_all_disks_on_peg_one.txt')
