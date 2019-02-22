@@ -1,6 +1,6 @@
 """
 For a game with 8 tiles of blocks on a 3x3 grid,
-write down the Facts and Rules to model the game state 
+write down the Facts and Rules to model the game state
 shown as the follows:
 
  y\\x   pos1     pos2     pos3
@@ -12,8 +12,25 @@ pos2 | tile6  | tile1  | tile8  |
 pos3 | tile7  | tile3  | tile2  |
      ----------------------------
 
-Example: 
+Example:
 fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+fact: (at pos1 pos1 tile5)
+fact: (at pos1 pos2 tile6)
+fact: (at pos1 pos3 tile7)
+fact: (at pos2 pos1 tile4)
+fact: (at pos2 pos2 tile1)
+fact: (at pos2 pos3 tile3)
+fact: (at pos3 pos1 empty)
+fact: (at pos3 pos2 tile8)
+fact: (at pos3 pos3 tile2)
+
+fact: (movable tile4 pos2 pos1 pos3 pos1)
+fact: (movable tile8 pos3 pos2 pos3 pos1)
+
+rule: ((at ?x1 pos1 ?a) (at ?x1 pos2 empty)) -> (movable ?a ?x pos1 ?x1 pos2)
+rule: ((at ?x1 pos2 ?a) (at ?x1 pos3 empty)) -> (movable ?a ?x pos2 ?x1 pos3)
+rule: ((at pos1 ?y1 ?a) (at pos2 ?y1 empty)) -> (movable ?a pos1 ?y1 pos2 ?y1)
+rule: ((at pos2 ?y1 ?a) (at pos3 ?y1 empty)) -> (movable ?a pos2 ?y1 pos3 ?y1)

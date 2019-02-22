@@ -37,6 +37,10 @@ class TowerOfHanoiGame(GameMaster):
         tuple1 = ()
         tuple2 = ()
         tuple3 = ()
+
+        t1Holder = []
+        t2Holder = []
+        t3Holder = []
         for fact in self.kb.facts:
             # print(fact.statement.predicate)
             if fact.statement.predicate == 'on':
@@ -45,18 +49,27 @@ class TowerOfHanoiGame(GameMaster):
                 pegNum = int(str(fact.statement.terms[1])[3])
 
                 if pegNum == 1:
-                    tuple1 += (diskNum,)
+                    t1Holder.append(diskNum)
+                    # tuple1 += (diskNum,)
                 elif pegNum == 2:
-                    tuple2 += (diskNum,)
+                    t2Holder.append(diskNum)
+                    # tuple2 += (diskNum,)
                 else:
-                    tuple3 += (diskNum,)
-                # print(diskNum)
-                # print(pegNum)
-                # print((tuple1,tuple2,tuple3))
+                    t3Holder.append(diskNum)
+                    # tuple3 += (diskNum,)
+
+        t1Holder.sort()
+        t2Holder.sort()
+        t3Holder.sort()
+
+        for item in t1Holder:
+            tuple1 += (item,)
+        for item2 in t2Holder:
+            tuple2 += (item2,)
+        for item3 in t3Holder:
+            tuple3 += (item3,)
+
         return (tuple1,tuple2,tuple3)
-
-
-        pass
 
     def makeMove(self, movable_statement):
         """
@@ -74,12 +87,12 @@ class TowerOfHanoiGame(GameMaster):
         Returns:
             None
         """
-
+        # I forgot about kb_ask until I finished this. So I might go back and change if I have time
         movingDisk = movable_statement.terms[0]
         fromPeg = movable_statement.terms[1]
         destPeg = movable_statement.terms[2]
 
-        factsToAppend = []
+        factsToAdd = []
         factsToRetract = []
 
         # 4 facts you'll need to add/retract no matter what: disk on new peg/disk off of old peg,
@@ -97,19 +110,48 @@ class TowerOfHanoiGame(GameMaster):
         factsToRetract.append(Fact(removeStatementOn))
         factsToRetract.append(Fact(removeStatementTop))
 
-        if Fact(Statement("empty", destPeg)) in self.kb.facts:
-            factsToRetract.retract(Fact(removeStatementTop))
+        if Fact(Statement(["empty", destPeg])) in self.kb.facts:
+            factsToRetract.append(Fact(Statement(["empty", destPeg])))
+            factsToAdd.append(Fact(Statement(["onTop",movingDisk,"table"])))
         else:
-            # factsToAdd.append(Fact(Statement("onTop")))
+            # print("in first else")
+            for fact in self.kb.facts:
+                if fact.statement.predicate == "top":
+                    if fact.statement.terms[1] == destPeg:
+                        oldTopDisk = fact.statement.terms[0]
+
+                        factsToAdd.append(Fact(Statement(["onTop",movingDisk,oldTopDisk])))
+                        factsToRetract.append(Fact(Statement(["top",oldTopDisk,destPeg])))
+            # bindings = match()
+
+            # factsToAdd.append(Fact(Statement(["onTop",])))
             # find disk on top of destPeg and add onTop
 
-        if Fact(Statement("onTop", movingDisk, "ground")) in self.kb.facts:
-            factsToAdd.append(Fact(Statement("empty", fromPeg)))
+        if Fact(Statement(["onTop", movingDisk, "table"])) in self.kb.facts:
+            factsToAdd.append(Fact(Statement(["empty", fromPeg])))
+            factsToRetract.append(Fact(Statement(["onTop",movingDisk,"table"])))
         else:
-            # factsToAdd.append(Fact(Statement("onTop")))
+            # print("in second else")
+            for fact in self.kb.facts:
+                if fact.statement.predicate == "onTop":
+                    if fact.statement.terms[0] == movingDisk:
+                        newTopDisk = fact.statement.terms[1]
+                        factsToAdd.append(Fact(Statement(["top",newTopDisk,fromPeg])))
+                        factsToRetract.append(Fact(Statement(["onTop",movingDisk,newTopDisk])))
             # find disk below movingDisk and add top
 
-        pass
+        # print(factsToAdd)
+        # print(factsToRetract)
+
+        factsToRetract.append(Fact(movable_statement))
+
+        for retractFact in factsToRetract:
+            self.kb.kb_retract(retractFact)
+
+        for addFact in factsToAdd:
+            self.kb.kb_assert(addFact)
+
+
 
     def reverseMove(self, movable_statement):
         """
