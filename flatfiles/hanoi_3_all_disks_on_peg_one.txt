@@ -26,17 +26,15 @@ fact: (inst peg peg1)
 fact: (inst peg peg2)
 fact: (inst peg peg3)
 
+fact: (inst ground table)
 
 fact: (on disk1 peg1)
 fact: (on disk2 peg1)
 fact: (on disk3 peg1)
-fact: (on disk4 peg1)
-fact: (on disk5 peg1)
 
 fact: (onTop disk1 disk2)
 fact: (onTop disk2 disk3)
-fact: (onTop disk3 disk4)
-fact: (onTop disk4 disk5)
+fact: (onTop disk3 ground)
 
 fact: (empty peg2)
 fact: (empty peg3)
@@ -48,7 +46,7 @@ fact: (top disk1 peg1)
 
 fact: (smaller disk1 disk2)
 fact: (smaller disk2 disk3)
-fact: (smaller disk3 disk4)
-fact: (smaller disk4 disk5)
 
 rule: ((top ?x ?y) (empty ?z) -> (movable ?x ?y ?z)
+rule: ((top ?x ?y) (top ?z ?w) (smaller ?x ?z) -> (movable ?z ?y ?w)
+rule: (smaller ?x ?y) (smaller ?y ?z) -> (smaller ?x ?z)

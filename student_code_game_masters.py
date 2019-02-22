@@ -6,7 +6,7 @@ class TowerOfHanoiGame(GameMaster):
 
     def __init__(self):
         super().__init__()
-        
+
     def produceMovableQuery(self):
         """
         See overridden parent class method for more information.
@@ -33,7 +33,29 @@ class TowerOfHanoiGame(GameMaster):
         Returns:
             A Tuple of Tuples that represent the game state
         """
-        ### student code goes here
+
+        tuple1 = ()
+        tuple2 = ()
+        tuple3 = ()
+        for fact in self.kb.facts:
+            # print(fact.statement.predicate)
+            if fact.statement.predicate == 'on':
+                # print(fact.statement.terms[1])
+                diskNum = int(str(fact.statement.terms[0])[4])
+                pegNum = int(str(fact.statement.terms[1])[3])
+
+                if pegNum == 1:
+                    tuple1 += (diskNum,)
+                elif pegNum == 2:
+                    tuple2 += (diskNum,)
+                else:
+                    tuple3 += (diskNum,)
+                # print(diskNum)
+                # print(pegNum)
+                # print((tuple1,tuple2,tuple3))
+        return (tuple1,tuple2,tuple3)
+
+
         pass
 
     def makeMove(self, movable_statement):
@@ -52,7 +74,14 @@ class TowerOfHanoiGame(GameMaster):
         Returns:
             None
         """
-        ### Student code goes here
+
+        pred = movable_statement.predicate
+        movingDisk = movable_statement.terms[0]
+        fromPeg = movable_statement.terms[1]
+        destPeg = movable_statement.terms[2]
+
+        self.kb.kb_remove(movable_statement)
+
         pass
 
     def reverseMove(self, movable_statement):
