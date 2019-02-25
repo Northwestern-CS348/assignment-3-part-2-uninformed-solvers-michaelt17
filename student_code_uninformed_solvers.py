@@ -1,5 +1,8 @@
 
 from solver import *
+from queue import *
+
+bfsQueue = Queue()
 
 class SolverDFS(UninformedSolver):
     def __init__(self, gameMaster, victoryCondition):
@@ -21,7 +24,6 @@ class SolverDFS(UninformedSolver):
 
         # print(self.gm.getMovables())
         # print(self.victoryCondition)
-        hasNewNode = False
 
         if self.currentState.state == self.victoryCondition:
             return True
@@ -43,7 +45,7 @@ class SolverDFS(UninformedSolver):
 
 
 
-        for idx,gs in enumerate(self.currentState.children):
+        for gs in self.currentState.children:
 
             if gs not in self.visited.keys():
                 # print("hello")
@@ -83,21 +85,50 @@ class SolverBFS(UninformedSolver):
         if self.currentState.state == self.victoryCondition:
             return True
 
+
+
+        currDepth = self.currentState.depth
+        oldState = self.currentState
+        #
+        print("current state: " + str(self.currentState.state))
+        print("new movables")
+
         for moveableStatement in self.gm.getMovables():
-            # print(moveableStatement)
+            print(moveableStatement)
             self.gm.makeMove(moveableStatement)
             self.currentState.children.append(GameState(self.gm.getGameState(),currDepth + 1, moveableStatement))
             self.gm.reverseMove(moveableStatement)
 
-        for idx,gs in enumerate(self.currentState.children):
 
+        for gs in self.currentState.children:
+            gs.parent = oldState
+            print(gs.state)
             if gs not in self.visited.keys():
-                # print("hello")
+                print("putting in queue")
+                bfsQueue.put(gs)
+                self.visited[gs] = True
+
+        newGameState =  bfsQueue.get()
+
+        notTrue = True
+
+        while notTrue:
+            if newGameState not in self.visited.keys():
                 self.gm.makeMove(gs.requiredMovable)
-
                 self.currentState =  GameState(self.gm.getGameState(), currDepth + 1, gs.requiredMovable)
-                self.currentState.parent = oldState
-                self.visited[self.currentState] = True
-                return False
+                notTrue = False
+            else:
+                if not bfsQueue.empty():
+                    newGameState = bfsQueue.get()
 
+        # self.visited[self.currentState] = True
         return False
+        # newGameState = bfsQueue.get()
+        # self.gm.makeMove(newGameState.requiredMovable)
+        # self.currentState = newGameState
+
+        # if newGameState not in self.visited.keys():
+        #     self.gm.makeMove(newGameState.requiredMovable)
+        #     self.currentState =  newGameState
+        #     self.visited[self.currentState] = True
+        #     return False
