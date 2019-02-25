@@ -131,6 +131,7 @@ class SolverBFS(UninformedSolver):
 
             if newState.state == self.victoryCondition:
                 # print("I won the game!!!")
+                bfsQueue.queue.clear()
                 return True
             else:
                 self.currentState = newState
