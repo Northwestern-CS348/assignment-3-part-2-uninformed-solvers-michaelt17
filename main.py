@@ -136,29 +136,10 @@ class KBTest(unittest.TestCase):
     #     th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
     #     self.assertFalse(th.isWon())
     #
-        solver = SolverDFS(th, ((),(),(1,2,3,4,5)))
+    #     solver = SolverDFS(th, ((),(),(1,2,3,4,5)))
     #     self.runSolve(solver)
 
-    def test04_BFS_Hanoi(self):
-        th = TowerOfHanoiGame()
-        th.read('hanoi_3_all_disks_on_peg_one.txt')
-        required = [
-            'fact: (movable disk1 peg3 peg1)',
-            'fact: (movable disk1 peg3 peg2)',
-        ]
-        th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
-        self.assertFalse(th.isWon())
-
-        solver = SolverBFS(th,((),(),(1,2,3)))
-
-        self.runPlayXSteps(solver, [
-            # [step, expected game state]
-            [10, ((), (1, 2), (3,))],
-            [11, ((1,), (3,), (2,))],
-            [20, ((), (2, 3), (1,))],
-        ])
-
-    # def test05_BFS_Hanoi(self):
+    # def test04_BFS_Hanoi(self):
     #     th = TowerOfHanoiGame()
     #     th.read('hanoi_3_all_disks_on_peg_one.txt')
     #     required = [
@@ -168,8 +149,27 @@ class KBTest(unittest.TestCase):
     #     th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
     #     self.assertFalse(th.isWon())
     #
-    #     solver = SolverBFS(th, ((),(),(1,2,3)))
-    #     self.runSolve(solver,)
+    #     solver = SolverBFS(th,((),(),(1,2,3)))
+    #
+    #     self.runPlayXSteps(solver, [
+    #         # [step, expected game state]
+    #         [10, ((), (1, 2), (3,))],
+    #         [11, ((1,), (3,), (2,))],
+    #         [20, ((), (2, 3), (1,))],
+    #     ])
+
+    def test05_BFS_Hanoi(self):
+        th = TowerOfHanoiGame()
+        th.read('hanoi_3_all_disks_on_peg_one.txt')
+        required = [
+            'fact: (movable disk1 peg3 peg1)',
+            'fact: (movable disk1 peg3 peg2)',
+        ]
+        th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
+        self.assertFalse(th.isWon())
+
+        solver = SolverBFS(th, ((),(),(1,2,3)))
+        self.runSolve(solver,)
 
     # def test06_GM_8Puzzle(self):
     #     p8 = Puzzle8Game()

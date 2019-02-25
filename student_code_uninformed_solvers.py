@@ -85,50 +85,65 @@ class SolverBFS(UninformedSolver):
         if self.currentState.state == self.victoryCondition:
             return True
 
-
-
         currDepth = self.currentState.depth
         oldState = self.currentState
         #
-        print("current state: " + str(self.currentState.state))
+        print()
+        # print("current state: " + str(self.currentState.state))
         print("new movables")
 
-        for moveableStatement in self.gm.getMovables():
-            print(moveableStatement)
-            self.gm.makeMove(moveableStatement)
-            self.currentState.children.append(GameState(self.gm.getGameState(),currDepth + 1, moveableStatement))
-            self.gm.reverseMove(moveableStatement)
+        if bfsQueue.empty():
+            # print("queue was empty")
+            for moveableStatement in self.gm.getMovables():
+                print(moveableStatement)
+                self.gm.makeMove(moveableStatement)
+                newGameState = GameState(self.gm.getGameState(),currDepth + 1, moveableStatement)
+                newGameState.parent = oldState
+                self.currentState.children.append(newGameState)
+                self.gm.reverseMove(moveableStatement)
 
-
-        for gs in self.currentState.children:
-            gs.parent = oldState
-            print(gs.state)
-            if gs not in self.visited.keys():
-                print("putting in queue")
+            for gs in self.currentState.children:
+                print("new states")
+                # print(gs.state)
+                # print(gs.parent.state)
                 bfsQueue.put(gs)
                 self.visited[gs] = True
+        else:
+            # print("queue was not empty")
+            newState = bfsQueue.get()
+            print(newState.state)
+            # print(newState.parent.state)
 
-        newGameState =  bfsQueue.get()
-
-        notTrue = True
-
-        while notTrue:
-            if newGameState not in self.visited.keys():
-                self.gm.makeMove(gs.requiredMovable)
-                self.currentState =  GameState(self.gm.getGameState(), currDepth + 1, gs.requiredMovable)
-                notTrue = False
+            if newState.state == self.victoryCondition:
+                return True
             else:
-                if not bfsQueue.empty():
-                    newGameState = bfsQueue.get()
+                movableList = []
+                currState = newState
+                while currState.parent is not None:
+                    # print("woooo")
+                    movableList.append(currState.requiredMovable)
+                    currState = currState.parent
+                # print(movableList)
 
-        # self.visited[self.currentState] = True
+                for m in movableList[::-1]:
+                    self.gm.makeMove(m)
+                for moveableStatement in self.gm.getMovables():
+                    # print(moveableStatement)
+                    self.gm.makeMove(moveableStatement)
+                    newGameState = GameState(self.gm.getGameState(),currDepth + 1, moveableStatement)
+                    newGameState.parent = newState
+                    newState.children.append(newGameState)
+                    self.gm.reverseMove(moveableStatement)
+                for gs in newState.children:
+                    # print("second new states")
+                    # print(gs.state)
+                    # print(gs.parent.state)
+                    if gs not in self.visited.keys():
+                        bfsQueue.put(gs)
+                        self.visited[gs] = True
+                for m2 in movableList:
+                    self.gm.reverseMove(m2)
+
+        # while self.currentState !=
+
         return False
-        # newGameState = bfsQueue.get()
-        # self.gm.makeMove(newGameState.requiredMovable)
-        # self.currentState = newGameState
-
-        # if newGameState not in self.visited.keys():
-        #     self.gm.makeMove(newGameState.requiredMovable)
-        #     self.currentState =  newGameState
-        #     self.visited[self.currentState] = True
-        #     return False
